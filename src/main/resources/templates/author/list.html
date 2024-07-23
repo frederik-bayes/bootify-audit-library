@@ -31,6 +31,7 @@
                             <td>
                                 <div class="float-end text-nowrap">
                                     <a th:href="@{/authors/edit/{id}(id=${author.id})}" class="btn btn-sm btn-secondary">[[#{author.list.edit}]]</a>
+                                    <a th:href="@{/authors/history/{id}(id=${author.id})}" class="btn btn-sm btn-secondary">[[#{author.list.history}]]</a>
                                     <form th:action="@{/authors/delete/{id}(id=${author.id})}"
                                             th:hx-confirm="#{delete.confirm}" method="post" class="d-inline">
                                         <button type="submit" class="btn btn-sm btn-secondary">[[#{author.list.delete}]]</button>

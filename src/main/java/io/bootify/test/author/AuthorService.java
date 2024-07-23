@@ -2,11 +2,14 @@ package io.bootify.test.author;
 
 import io.bootify.test.book.Book;
 import io.bootify.test.book.BookRepository;
+import io.bootify.test.revision.RevisionDTO;
 import io.bootify.test.util.NotFoundException;
 import io.bootify.test.util.ReferencedWarning;
-import java.util.List;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.history.Revision;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service
@@ -49,6 +52,22 @@ public class AuthorService {
 
     public void delete(final Long id) {
         authorRepository.deleteById(id);
+    }
+
+    public List<RevisionDTO<AuthorDTO>> findRevisions(final Long id) {
+        return authorRepository
+                .findRevisions(id)
+                .reverse()
+                .map(it -> mapToDTO(it, new RevisionDTO<>()))
+                .toList();
+    }
+
+    private RevisionDTO<AuthorDTO> mapToDTO(final Revision<Long, Author> revision, final RevisionDTO<AuthorDTO> revisionDTO) {
+        Author entity = revision.getEntity();
+        revisionDTO.setModifiedAt(entity.getLastModifiedAt());
+        revisionDTO.setModifiedBy(entity.getLastModifiedBy());
+        revisionDTO.setValue(mapToDTO(entity, new AuthorDTO()));
+        return revisionDTO;
     }
 
     private AuthorDTO mapToDTO(final Author author, final AuthorDTO authorDTO) {

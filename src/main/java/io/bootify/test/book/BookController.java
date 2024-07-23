@@ -86,4 +86,10 @@ public class BookController {
         return "redirect:/books";
     }
 
+    @GetMapping("/history/{id}")
+    public String history(@PathVariable(name = "id") final Long id, final Model model) {
+        model.addAttribute("revisions", bookService.findRevisions(id));
+        return "history/index";
+    }
+
 }

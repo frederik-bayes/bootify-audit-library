@@ -81,4 +81,10 @@ public class AuthorController {
         return "redirect:/authors";
     }
 
+    @GetMapping("/history/{id}")
+    public String history(@PathVariable(name = "id") final Long id, final Model model) {
+        model.addAttribute("revisions", authorService.findRevisions(id));
+        return "history/index";
+    }
+
 }

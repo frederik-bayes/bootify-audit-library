@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>[[#{history.headline}]]</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="d-flex flex-wrap mb-4">
+        <h1 class="flex-grow-1">[[#{history.headline}]]</h1>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead>
+            <tr>
+                <th scope="col">[[#{revision.number.label}]]</th>
+                <th scope="col">[[#{revision.modifiedAt.label}]]</th>
+                <th scope="col">[[#{revision.modifiedBy.label}]]</th>
+                <th scope="col">[[#{revision.previous.label}]]</th>
+                <th scope="col">[[#{revision.current.label}]]</th>
+                <th scope="col">[[#{revision.changes.label}]]</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="revision,iter : ${revisions}"
+                th:with="current=${revision.value},previous=${iter.last ? null : revisions[iter.index+1].value}">
+                <td>[[${iter.size - iter.index}]]</td>
+                <td>[[${#dates.format(revision.modifiedAt)}]]</td>
+                <td>[[${revision.modifiedBy}]]</td>
+                <td style="white-space: pre">[[${@jsonUtils.toJson(previous)}]]</td>
+                <td style="white-space: pre">[[${@jsonUtils.toJson(current)}]]</td>
+                <td style="white-space: pre">[[${@jsonUtils.diff(previous, current)}]]</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
