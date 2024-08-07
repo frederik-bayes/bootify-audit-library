@@ -16,21 +16,44 @@
                 <th scope="col">[[#{revision.number.label}]]</th>
                 <th scope="col">[[#{revision.modifiedAt.label}]]</th>
                 <th scope="col">[[#{revision.modifiedBy.label}]]</th>
-                <th scope="col">[[#{revision.previous.label}]]</th>
-                <th scope="col">[[#{revision.current.label}]]</th>
-                <th scope="col">[[#{revision.changes.label}]]</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="revision,iter : ${revisions}"
-                th:with="current=${revision.value},previous=${iter.last ? null : revisions[iter.index+1].value}">
-                <td>[[${iter.size - iter.index}]]</td>
-                <td>[[${#dates.format(revision.modifiedAt)}]]</td>
-                <td>[[${revision.modifiedBy}]]</td>
-                <td style="white-space: pre">[[${@jsonUtils.toJson(previous)}]]</td>
-                <td style="white-space: pre">[[${@jsonUtils.toJson(current)}]]</td>
-                <td style="white-space: pre">[[${@jsonUtils.diff(previous, current)}]]</td>
-            </tr>
+            <th:block th:each="revision,iter : ${revisions}"
+                      th:with="current=${revision.value},previous=${iter.last ? null : revisions[iter.index+1].value}">
+                <tr>
+                    <td>[[${iter.size - iter.index}]]</td>
+                    <td>[[${#dates.format(revision.modifiedAt)}]]</td>
+                    <td>[[${revision.modifiedBy}]]</td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <div th:id="'revision-' + ${iter.index} + '-changes'"><!-- --></div>
+                    </td>
+                </tr>
+                <script th:inline="javascript">
+                    htmx.onLoad(function () {
+                        const diffString = /*[[${@diffUtils.asUnifiedJsonDiff(previous, current)}]]*/ null;
+                        const targetElement = document.getElementById('revision-[[${iter.index}]]-changes');
+                        const configuration = {
+                            drawFileList: false,
+                            fileListToggle: false,
+                            fileListStartVisible: false,
+                            fileContentToggle: false,
+                            matching: 'lines',
+                            outputFormat: 'side-by-side',
+                            synchronisedScroll: true,
+                            highlight: true,
+                            renderNothingWhenEmpty: false,
+                        };
+                        if (targetElement) {
+                            const diff2htmlUi = new Diff2HtmlUI(targetElement, diffString, configuration);
+                            diff2htmlUi.draw();
+                            diff2htmlUi.highlightCode();
+                        }
+                    });
+                </script>
+            </th:block>
             </tbody>
         </table>
     </div>
